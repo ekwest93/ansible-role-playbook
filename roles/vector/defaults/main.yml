@@ -1,2 +1,4 @@
 ---
-# defaults file for vector
+vector_version: present
+vector_config_dir: /etc/vector
+vector_config: {}

@@ -1,2 +1,50 @@
 ---
-# tasks file for vector
+- name: Update apt cache (Debian)
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Vector dependencies
+  apt:
+    name:
+      - curl
+      - gnupg
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Vector GPG key
+  apt_key:
+    url: https://repositories.vector.dev/gpg.key
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Vector repository
+  apt_repository:
+    repo: "deb https://repositories.vector.dev/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Vector
+  apt:
+    name: vector
+    state: "{{ vector_version | default('present') }}"
+
+- name: Create Vector config directory
+  file:
+    path: /etc/vector
+    state: directory
+    mode: '0755'
+
+- name: Deploy Vector configuration
+  template:
+    src: vector.toml.j2
+    dest: /etc/vector/vector.toml
+    mode: '0644'
+  notify: restart vector
+  when: vector_config is defined
+
+- name: Enable and start Vector service
+  systemd:
+    name: vector
+    state: started
+    enabled: yes

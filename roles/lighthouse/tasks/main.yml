@@ -1,9 +1,41 @@
 ---
-- name: Install nginx
+- name: Update apt cache (Debian)
   apt:
-    name: nginx
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install required packages
+  apt:
+    name:
+      - git
+      - nginx
     state: present
   when: ansible_os_family == "Debian"
+
+- name: Create LightHouse directory
+  file:
+    path: "{{ lighthouse_install_path | default('/var/www/lighthouse') }}"
+    state: directory
+    mode: '0755'
+
+- name: Clone LightHouse repository
+  git:
+    repo: "{{ lighthouse_repo | default('https://github.com/VKCOM/lighthouse.git') }}"
+    dest: "{{ lighthouse_install_path | default('/var/www/lighthouse') }}"
+    version: "{{ lighthouse_version | default('master') }}"
+
+- name: Configure nginx for LightHouse
+  template:
+    src: lighthouse.conf.j2
+    dest: /etc/nginx/sites-available/lighthouse.conf
+  notify: restart nginx
+
+- name: Enable nginx site
+  file:
+    src: /etc/nginx/sites-available/lighthouse.conf
+    dest: /etc/nginx/sites-enabled/lighthouse.conf
+    state: link
+  notify: restart nginx
 
 - name: Ensure nginx is running
   systemd:

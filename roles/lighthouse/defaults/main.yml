@@ -1,2 +1,7 @@
 ---
+lighthouse_repo: "https://github.com/VKCOM/lighthouse.git"
+lighthouse_version: "master"
+lighthouse_install_path: "/var/www/lighthouse"
+lighthouse_server_name: "_"
 lighthouse_port: 80
+clickhouse_host: "localhost"

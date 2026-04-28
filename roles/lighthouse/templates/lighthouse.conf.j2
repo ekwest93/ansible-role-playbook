@@ -1,0 +1,16 @@
+server {
+    listen {{ lighthouse_port }};
+    server_name {{ lighthouse_server_name }};
+    
+    root {{ lighthouse_install_path }};
+    index index.html;
+    
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    
+    location /api/ {
+        proxy_pass http://{{ clickhouse_host }}:8123/;
+        proxy_set_header Host $host;
+    }
+}
