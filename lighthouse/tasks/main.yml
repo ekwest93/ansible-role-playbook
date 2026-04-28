@@ -1,0 +1,12 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure nginx is running
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes

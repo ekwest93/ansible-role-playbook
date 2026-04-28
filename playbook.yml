@@ -1,0 +1,27 @@
+---
+- name: Deploy ClickHouse
+  hosts: clickhouse_hosts
+  become: yes
+  roles:
+    - role: clickhouse
+      vars:
+        clickhouse_users:
+          - name: default
+            password: ""
+            nets: "::/0"
+
+- name: Deploy LightHouse
+  hosts: lighthouse_hosts
+  become: yes
+  roles:
+    - role: lighthouse
+      vars:
+        lighthouse_port: 8080
+
+- name: Deploy Vector
+  hosts: vector_hosts
+  become: yes
+  roles:
+    - role: vector
+      vars:
+        vector_version: present
