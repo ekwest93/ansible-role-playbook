@@ -1,0 +1,6 @@
+.terraform*
+*.tfstate*
+*.tfvars
+!*.tfvars_example
+*.log
+hosts.ini
